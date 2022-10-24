@@ -40,7 +40,7 @@ def get_time_info(URL:str)->int:
                 return time
     except Exception as e:
         raise InvalidURLException
-
+        
 @ensure_annotations
 def render_youtube_video(URL : str, width: int=780, height: int=600)->str:
     try:
