@@ -1,12 +1,13 @@
-from tkinter import E
+
 from IPython import display
 from ensure import ensure_annotations
 from IPYNBrenderer.custom_exception import InvalidURLException
 from IPYNBrenderer.logger import logger
 from py_youtube import Data
 
+
 @ensure_annotations
-def get_time_info(URL:str)->int:
+def get_time_info(URL: str) -> int:
     def _verify_vide_id_len(vid_ID, __expected_length=11):
         len_video_id = len(vid_ID)
         if len_video_id != __expected_length:
@@ -16,6 +17,8 @@ def get_time_info(URL:str)->int:
 
     try:
         split_val = URL.split("=")
+        if len(split_val) > 5:
+            raise InvalidURLException
         if "watch" in URL:
             if ("&t" in URL):
                 vid_id, time = split_val[1][0:11], int(split_val[-1][0:-1])
@@ -38,11 +41,12 @@ def get_time_info(URL:str)->int:
                 _verify_vide_id_len(vid_id)
                 logger.info(f"video starts at {time}")
                 return time
-    except Exception as e:
+    except Exception:
         raise InvalidURLException
-        
+
+
 @ensure_annotations
-def render_youtube_video(URL : str, width: int=780, height: int=600)->str:
+def render_youtube_video(URL: str, width: int = 780, height: int = 600) -> str:
     try:
         if URL is None:
             raise InvalidURLException("URL cannot be None")
@@ -52,18 +56,19 @@ def render_youtube_video(URL : str, width: int=780, height: int=600)->str:
             vid_ID = data["id"]
             embed_url = f"https://www.youtube.com/embed/{vid_ID}?start={time}"
             logger.info("embed URL: {}".format(embed_url))
-            iframe = """<iframe 
-            width="{width}" height="{height}" 
-            src="https://www.youtube.com/embed/1-68pFs_HIE?start=717" 
-            title="YouTube video player" frameborder="0" 
-            allow="accelerometer; autoplay; clipboard-write; 
-            encrypted-media; gyroscope; picture-in-picture" 
+            iframe = """<iframe
+            width="{width}" height="{height}"
+            src="https://www.youtube.com/embed/1-68pFs_HIE?start=717"
+            title="YouTube video player" frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write;
+            encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen>
             </iframe>
             """
 
             display.display(display.HTML(iframe))
-            return "Success!" 
+            return "Success!"
+        else:
+            raise InvalidURLException("Publish date cannot be None")
     except Exception as e:
         raise e
-    
